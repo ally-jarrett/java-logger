@@ -1,7 +1,0 @@
-org/rh/example/config/SchedulerConfiguration.class
-org/rh/example/utils/LoggerUtils.class
-org/rh/example/executor/LoggingSchedulerUtils.class
-org/rh/example/JavaLoggerApplication.class
-org/rh/example/executor/LoggingExecutor.class
-org/rh/example/executor/LoggingExecutor$1.class
-org/rh/example/config/ThreadPoolTaskExecutorConfig.class
