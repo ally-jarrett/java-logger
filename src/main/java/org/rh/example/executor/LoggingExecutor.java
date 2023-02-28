@@ -4,9 +4,8 @@ import org.rh.example.utils.LoggerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
@@ -34,13 +33,11 @@ public class LoggingExecutor {
      * Populate a Bounded Queue of 10K tasks, these tasks will
      * execute as fast as the logging config will allow..
      */
-    @EventListener(ApplicationReadyEvent.class)
-    private void doSomeLogging() {
+    @Async
+    public void doSomeLogging(int logMessageLength) {
 
-        this.setRun(true);
         Instant start = Instant.now();
 
-        logger.info("Starting log generator: {}", this.isRun());
         while (this.isRun()) {
             threadPoolExecutor.execute(new Runnable() {
                 @Override
@@ -49,7 +46,7 @@ public class LoggingExecutor {
                             + Thread.currentThread().getName() + "'";
 
                     // Add additional Char padding if specified via -Djava.logger.log.char_count
-                    logMessage = loggerUtils.padLoggingStringToCharCount(logMessage);
+                    logMessage = loggerUtils.padLoggingStringToCharCount(logMessage, logMessageLength);
                     logger.debug(logMessage);
                 }
             });

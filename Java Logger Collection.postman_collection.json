@@ -1,0 +1,100 @@
+{
+	"info": {
+		"_postman_id": "3f5b024f-218d-4c96-aefb-490c538d1d93",
+		"name": "Java Logger Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "9292847"
+	},
+	"item": [
+		{
+			"name": "Ping",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Test Logging Request",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/logs/test",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"logs",
+						"test"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Generate Logging Requests",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/logs/generate?runtime=60",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"logs",
+						"generate"
+					],
+					"query": [
+						{
+							"key": "runtime",
+							"value": "60",
+							"description": "Run log generator for X seconds"
+						},
+						{
+							"key": "polltime",
+							"value": "5",
+							"description": "Poll stats to STDOUT every X seconds",
+							"disabled": true
+						},
+						{
+							"key": "message_length",
+							"value": "200",
+							"description": "Pad logging message to X chars",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}

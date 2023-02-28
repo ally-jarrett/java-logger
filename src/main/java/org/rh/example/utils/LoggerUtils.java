@@ -10,20 +10,18 @@ public class LoggerUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(LoggerUtils.class);
 
-    @Value("${java.logger.log.char_count:0}")
-    private int charCount;
-
     /**
      * Generate logging string with specified padding
      * @param logMessage
+     * @param logMessageLength
      * @return
      */
-    public String padLoggingStringToCharCount(String logMessage) {
-        if (charCount > 0) {
+    public String padLoggingStringToCharCount(String logMessage, int logMessageLength) {
+        if (logMessageLength > 0) {
 
             // Pad string
-            if (logMessage.length() < charCount) {
-                int padCharLength = charCount - logMessage.length();
+            if (logMessage.length() < logMessageLength) {
+                int padCharLength = logMessageLength - logMessage.length();
                 String padding = padRight("", padCharLength - 1);
 
                 // Add padding if required

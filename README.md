@@ -8,14 +8,15 @@ This is a very simple Java Spring app to generate logging load to help flush out
 
 ## LoggingExecutor
 
-This performs the log load generation, it uses a simple single threaded TaskExecutor with a bounded queue size of 10k (to keep memory usage low). 
-The app will keep the bounded queue full with logging tasks, whilst the single threaded executor will execute simple `log.debug(<TEXT>)` statements. 
+This performs the log load generation, it uses a simple configurable thread pool TaskExecutor with a bounded queue size of 10k (to keep memory usage low). 
+The app will keep the bounded queue full with logging tasks. The task executor will execute simple `log.debug(<TEXT>)` statements as fast as the disk can handle. 
 
 This allows you to configure LogBack in various ways to test its speed and performance. 
 
 ---
 **NOTE:**
-LogBack is currently configured with a simple synchronous blocking mechanism meaning the executor thread will be blocked for as long as it takes to persist the debug log to storage. 
+- LogBack is currently configured with a simple synchronous blocking mechanism meaning the executor thread will be blocked for as long as it takes to persist the debug log to storage. <br/>
+- LogBack is configured to have all **DEBUG** statements persisting to disk, whilst **INFO** and above goes to STDOUT and DISK
 ---
 
 To increase performance, there are 2 things that can be done: 
@@ -38,17 +39,7 @@ There are 2 types of tasks :
 
 ## ENV Variables 
 
-- **java.logger.poller.interval**=10: How often to print logging stats to console (Seconds)
-- **java.logger.executor.shutdown**=60 : How long to run the Log Generator for (Seconds)
-- **java.logger.executor.log_dir**=/logs
-- **java.logger.executor.log_name**=java-logger.log
-- **java.logger.log.char_count**=0: Specify log length - This pads the log length with '*'
-
----
-**NOTE:**
-- _PROP_=X denotes the properties default value
-- _char_count_ : simply appends additional chars to the standard log message, it currently does not trim to a specific length
----
+- **JAVA_LOGGER_EXEC_THREADS**=1: How many threads to use for Logging Executor
 
 # Performance Measurements 
 
@@ -77,24 +68,84 @@ Specs:
   Default locale: en_GB, platform encoding: UTF-8
   OS name: "mac os x", version: "13.2", arch: "aarch64", family: "mac"
 ```
-
 # How To Run
 
-## Running Locally
+## Running Locally as Java App
 
 1. Build the JAR : `$ mvn clean package` or alternatively you can run directly from maven `$ mvn spring-boot:run`
 2. Run the JAR : `java -Djava.logger.executor.thread_pool_size=1 -jar target/java-logger.jar`
-3. Inspect logs: logs/java-logger.logs
+3. Execute the API: `curl -X POST 'http://localhost:8080/logs/generate?runtime=60&polltime=5'`
 
+## Running Locally as Container
+
+1. Build the container: `$ podman --platform linux/amd64 build -t java-logger .`
+2. Run the container: `$ podman run --name java-logger -d -p 8080:8080 java-logger`
+3. Execute the API: `curl -X POST 'http://localhost:8080/logs/generate?runtime=60&polltime=5'`
+4. Inspect STDOUT: `$ podman logs java-logger`
+5. Inspect container log file: 
+    ```
+    $ podman exec -t java-logger /bin/bash
+    $ >> [container-bash] tail -f -100 /home/jboss/logs/java-logger.log
+    ```
 
 ## Running on OCP 
 
 For the sake of brevity we will build the image locally and push to a registry. 
 
 1. Build the Image
-2. Push to OCP 
-3. Configuration 
-4. Start
+
+   -  `$ podman --platform linux/amd64 build -t java-logger .`
+     - Optional (Test Build): 
+       - `$ podman run --name java-logger -d -p 8080:8080 java-logger`
+       - ```
+          $ curl -X GET "http://localhost:8080/logs/ping"
+          > Pong
+          $ podman logs java-logger
+         ... <JAVA Crap> ...
+       ```
+
+2. Push to OCP Registry or Quay 
+
+    ```bash
+    $ podman tag java-logger quay.io/ajarrett/java-logger
+    $ podman push quay.io/ajarrett/java-logger
+    Getting image source signatures
+    Copying blob sha256:...
+    Writing manifest to image destination
+    Storing signatures
+    ```
+
+3. Deploy to OCP  
+
+    - There is a basic deployment config in the `/openshift` folder. 
+    ```bash
+    $ oc new-project java-logger
+    $ oc apply -f openshift/deployment.yml
+    ```
+---
+**NOTE:**
+This creates Deployment, PVC, Service + Route.<br />
+_**Please change PVC to match Storage reqs.**_
+---
+
+
+4. Start the Log Generator via API 
+
+   - Execute the API: `curl -X POST 'http://<OCP_ROUTE_PATH>/logs/generate?runtime=60&polltime=5'`
+
+---
+**NOTE:**
+Postman collection is available in Repo
+---
+
+5. Inspect STDOUT for Log Generator stats: `$ oc logs <POD>`
+
+6. Inspect container log file:
+    ```
+    $ oc rsh <POD>
+    $ >> [pod-bash] tail -f -100 /home/jboss/logs/java-logger.log
+    ```
+
 
 ### Reference Documentation
 For further reference, please consider the following sections:
