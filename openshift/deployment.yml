@@ -42,12 +42,12 @@ spec:
         deployment: java-logger
     spec:
       containers:
-        - image: quay.io/ajarrett/java-logger:latest
+        - env:
+            - name: JAVA_LOGGER_EXEC_THREADS
+              value: "1"
+          image: quay.io/ajarrett/java-logger:latest
           imagePullPolicy: Always
           name: java-logger
-          env:
-            - name: JAVA_LOGGER_EXEC_THREADS
-              value: 1
           ports:
             - containerPort: 8080
               protocol: TCP
