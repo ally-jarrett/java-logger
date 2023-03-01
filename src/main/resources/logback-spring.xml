@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+    <contextListener class="org.rh.example.config.LogbackStartupListener"/>
     <property resource="application.properties" />
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
@@ -13,7 +14,7 @@
     </appender>
 
     <appender name="SAVE-TO-FILE" class="ch.qos.logback.core.FileAppender">
-        <file>${java.logger.executor.log_dir}/${java.logger.executor.log_name}</file>
+        <file>${java.logger.executor.log_dir}/${JAVA_LOGGER_LOG_NAME}.log</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <Pattern>
                 %d{dd-MM-yyyy HH:mm:ss.SSS} [%thread] %-5level %logger{36}.%M - %msg%n

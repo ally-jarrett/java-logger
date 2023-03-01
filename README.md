@@ -78,7 +78,7 @@ Specs:
 
 ## Running Locally as Container
 
-1. Build the container: `$ podman --platform linux/amd64 build -t java-logger .`
+1. Build the container: `$ podman build --platform linux/amd64 -t java-logger .`
 2. Run the container: `$ podman run --name java-logger -d -p 8080:8080 java-logger`
 3. Execute the API: `curl -X POST 'http://localhost:8080/logs/generate?runtime=60&polltime=5'`
 4. Inspect STDOUT: `$ podman logs java-logger`
@@ -94,7 +94,7 @@ For the sake of brevity we will build the image locally and push to a registry.
 
 1. Build the Image
 
-   -  `$ podman --platform linux/amd64 build -t java-logger .`
+   -  `$ podman build--platform linux/amd64 -t java-logger .`
      - Optional (Test Build): 
        - `$ podman run --name java-logger -d -p 8080:8080 java-logger`
        - ```

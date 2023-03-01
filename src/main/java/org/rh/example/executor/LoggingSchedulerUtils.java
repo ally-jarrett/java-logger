@@ -24,19 +24,25 @@ public class LoggingSchedulerUtils {
     @Autowired
     ScheduledExecutorService scheduledExecutorService;
 
-    public void scheduleLoggingGeneration(int runtime, int polltime, int messageLength) {
+    public boolean scheduleLoggingGeneration(int runtime, int polltime, int messageLength) {
 
-        logger.info("Starting log generator to run for : '{}' Seconds", runtime);
+        if (!execServicePerformance.isRun()) {
 
-        // Kickoff Log Generator
-        execServicePerformance.setRun(true);
-        execServicePerformance.doSomeLogging(messageLength);
+            logger.info("Starting log generator to run for : '{}' Seconds", runtime);
 
-        // Schedule shutdown task
-        scheduledExecutorService.schedule(this.killLogGeneratorTask, runtime, TimeUnit.SECONDS);
+            // Kickoff Log Generator
+            execServicePerformance.setRun(true);
+            execServicePerformance.doSomeLogging(messageLength);
 
-        // Schedule poll task stats
-        scheduledExecutorService.scheduleAtFixedRate(this.pollLogGeneratorStats, 0, polltime, TimeUnit.SECONDS);
+            // Schedule shutdown task
+            scheduledExecutorService.schedule(this.killLogGeneratorTask, runtime, TimeUnit.SECONDS);
+
+            // Schedule poll task stats
+            scheduledExecutorService.scheduleAtFixedRate(this.pollLogGeneratorStats, 0, polltime, TimeUnit.SECONDS);
+        } else {
+            return false;
+        }
+        return true;
     }
 
     Runnable pollLogGeneratorStats = new Runnable() {

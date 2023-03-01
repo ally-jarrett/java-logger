@@ -61,7 +61,13 @@ public class LoggerController {
         logger.info("Running Logging Generator for '{}' Seconds, Polling at an interval of '{}' " +
                 "with a specified log message length of : '{}'", runtime, polltime, logMessageLength);
 
-        loggingSchedulerUtils.scheduleLoggingGeneration(runtime, polltime, logMessageLength);
+        boolean logRun = loggingSchedulerUtils.scheduleLoggingGeneration(runtime, polltime, logMessageLength);
+
+        if (!logRun) {
+            return new ResponseEntity<>("Logging Generator is already running, please try again later...!",
+                    HttpStatus.METHOD_NOT_ALLOWED);
+        }
+
         return new ResponseEntity<>("Logging Generator scheduled to run for '" + runtime + "' Seconds",
                 HttpStatus.CREATED);
     }
