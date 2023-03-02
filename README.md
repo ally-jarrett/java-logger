@@ -85,14 +85,14 @@ Specs:
 5. Inspect container log file: 
     ```
     $ podman exec -t java-logger /bin/bash
-    $ >> [container-bash] tail -f -100 /home/jboss/logs/java-logger.log
+    $ >> [container-bash] tail -f -100 /home/jboss/logs/<container_id>_java-logger.log
     ```
 
 ## Running on OCP 
 
 For the sake of brevity we will build the image locally and push to a registry. 
 
-1. Build the Image
+1. (Optional) Build the Image
 
    -  `$ podman build--platform linux/amd64 -t java-logger .`
      - Optional (Test Build): 
@@ -104,7 +104,7 @@ For the sake of brevity we will build the image locally and push to a registry.
          ... <JAVA Crap> ...
        ```
 
-2. Push to OCP Registry or Quay 
+2. (Optional) Push to OCP Registry or Quay 
 
     ```bash
     $ podman tag java-logger quay.io/ajarrett/java-logger
@@ -134,6 +134,13 @@ _**Please change PVC to match Storage reqs.**_
    - Execute the API: `curl -X POST 'http://<OCP_ROUTE_PATH>/logs/generate?runtime=60&polltime=5'`
 
 ---
+Parameters for the API
+
+**runtime:** Time in seconds to run the test
+**message_length:** Length of padding for the log message size
+**polltime:** How often to publish status to container STDOUT
+
+
 **NOTE:**
 Postman collection is available in Repo
 ---
@@ -143,7 +150,7 @@ Postman collection is available in Repo
 6. Inspect container log file:
     ```
     $ oc rsh <POD>
-    $ >> [pod-bash] tail -f -100 /home/jboss/logs/java-logger.log
+    $ >> [pod-bash] tail -f -100 /home/jboss/logs/<container_id>_java-logger.log
     ```
 
 
