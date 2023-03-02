@@ -137,7 +137,9 @@ _**Please change PVC to match Storage reqs.**_
 Parameters for the API
 
 **runtime:** Time in seconds to run the test
+
 **message_length:** Length of padding for the log message size
+
 **polltime:** How often to publish status to container STDOUT
 
 
