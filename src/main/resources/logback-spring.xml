@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <contextListener class="org.rh.example.config.LogbackStartupListener"/>
-    <property resource="application.properties" />
+    <property resource="application.properties"/>
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>INFO</level>
@@ -13,12 +13,29 @@
         </encoder>
     </appender>
 
-    <appender name="SAVE-TO-FILE" class="ch.qos.logback.core.FileAppender">
-        <file>${java.logger.executor.log_dir}/${JAVA_LOGGER_LOG_NAME}.log</file>
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <Pattern>
-                %d{dd-MM-yyyy HH:mm:ss.SSS} [%thread] %-5level %logger{36}.%M - %msg%n
-            </Pattern>
+    <!--        <appender name="SAVE-TO-FILE" class="ch.qos.logback.core.FileAppender">-->
+    <!--            <file>${java.logger.executor.log_dir}/${JAVA_LOGGER_LOG_NAME}.log.gz</file>-->
+    <!--            <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">-->
+    <!--                <Pattern>-->
+    <!--                    %d{dd-MM-yyyy HH:mm:ss.SSS} [%thread] %-5level %logger{36}.%M - %msg%n-->
+    <!--                </Pattern>-->
+    <!--            </encoder>-->
+    <!--        </appender>-->
+
+    <appender name="SAVE-TO-FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+<!--        <file>${java.logger.executor.log_dir}/${JAVA_LOGGER_LOG_NAME}.log.gz</file>-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${java.logger.executor.log_dir}/${JAVA_LOGGER_LOG_NAME}-%d{yyyy-MM-dd}.%i.log.gz
+            </fileNamePattern>
+            <!-- each archived file's size will be max 10MB -->
+            <maxFileSize>10MB</maxFileSize>
+            <!-- 30 days to keep -->
+            <maxHistory>5</maxHistory>
+            <!-- total size of all archive files, if total size > 100GB, it will delete old archived file -->
+            <totalSizeCap>100GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{dd-MM-yyyy HH:mm:ss.SSS} [%thread] %-5level %logger{36}.%M - %msg%n</pattern>
         </encoder>
     </appender>
 

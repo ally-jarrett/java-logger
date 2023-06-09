@@ -17,12 +17,12 @@ metadata:
   name: java-logger-pvc
 spec:
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   persistentVolumeReclaimPolicy: Recycle
   resources:
     requests:
-      storage: 6Gi
-  # storageClassName: thin-csi (ReadWriteOnce)
+      storage: 1Gi
+  #storageClassName: thin-csi
   storageClassName: ocs-storagecluster-cephfs
   # storageClassName: crc-csi-hostpath-provisioner (ReadWriteOnce)
 ---
@@ -50,7 +50,8 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-          image: quay.io/ajarrett/java-logger:latest
+          #image: quay.io/ajarrett/java-logger:latest
+          image: quay.io/ajarrett/java-logger-size:latest
           imagePullPolicy: Always
           name: java-logger
           ports:

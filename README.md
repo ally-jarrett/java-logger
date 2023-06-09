@@ -94,7 +94,7 @@ For the sake of brevity we will build the image locally and push to a registry.
 
 1. (Optional) Build the Image
 
-   -  `$ podman build--platform linux/amd64 -t java-logger .`
+   -  `$ podman build --platform linux/amd64 -t java-logger .`
      - Optional (Test Build): 
        - `$ podman run --name java-logger -d -p 8080:8080 java-logger`
        - ```
