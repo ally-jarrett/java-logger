@@ -1,0 +1,73 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: elastic-monitoring
+  labels:
+    name: elastic-monitoring
+---
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: elasticsearch
+  namespace: elastic-monitoring
+spec:
+  version: 7.17.1
+  nodeSets:
+    - name: default
+      count: 1
+      podTemplate:
+        spec:
+          containers:
+            - name: elasticsearch
+              env:
+                - name: ES_JAVA_OPTS
+                  value: -Xms2g -Xmx2g
+              resources:
+                requests:
+                  memory: 4Gi
+                  cpu: 1
+                limits:
+                  memory: 4Gi
+      volumeClaimTemplates:
+        - metadata:
+            name: elasticsearch-data
+          spec:
+            accessModes:
+              - ReadWriteOnce
+            resources:
+              requests:
+                storage: 100Gi
+            storageClassName: thin
+      config:
+        node.roles: [ "master", "data" ]
+        node.store.allow_mmap: false
+---
+apiVersion: kibana.k8s.elastic.co/v1
+kind: Kibana
+metadata:
+  name: kibana
+  namespace: elastic-monitoring
+spec:
+  version: 7.17.1
+  count: 1
+  elasticsearchRef:
+    name: elasticsearch
+---
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: kibana-kb-http
+  namespace: elastic-monitoring
+  labels:
+    common.k8s.elastic.co/type: kibana
+    kibana.k8s.elastic.co/name: kibana
+spec:
+  host: kibana-kb-http-elastic-monitoring.apps.cedar.demolab.local
+  to:
+    kind: Service
+    name: kibana-kb-http
+    weight: 100
+  port:
+    targetPort: https
+  tls:
+    termination: passthrough

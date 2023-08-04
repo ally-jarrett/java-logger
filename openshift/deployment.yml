@@ -1,9 +1,51 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: java-logger
+  labels:
+    name: java-logger
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: filebeat-configmap
+  namespace: java-logger
+data:
+  filebeat.yml: |
+    filebeat.inputs:
+    - type: log
+      paths:
+        - '/home/jboss/logs/app.log'
+      filebeat.config.modules:
+        path: /opt/app-root/src/filebeat/modules.d/*.yml
+        reload.enabled: true
+    output:
+      elasticsearch:
+        hosts: ["https://elasticsearch-es-http.elastic-monitoring.svc.cluster.local:9200"]
+        username: "elastic"
+        password: "58yeA0sC8orzaV8R7dR518Z2"
+        ssl.verification_mode: none
+    setup:
+      kibana: 
+        host: "kibana-kb-http-elastic-monitoring.apps.cedar.demolab.local"
+    logging:
+      level: debug
+      to_files: true
+      to_stderr: true
+      to_syslog: false
+      files:
+        path: /var/log/filebeat
+        name: filebeat
+        keepfiles: 1
+        permissions: 0640
+---
 apiVersion: v1
 kind: Service
 metadata:
   labels:
     app: java-logger
   name: java-logger-service
+  namespace: java-logger
 spec:
   ports:
     - name: 8080-tcp
@@ -15,9 +57,10 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: java-logger-pvc
+  namespace: java-logger
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   persistentVolumeReclaimPolicy: Recycle
   resources:
     requests:
@@ -32,6 +75,7 @@ metadata:
   labels:
     app: java-logger
   name: java-logger
+  namespace: java-logger
 spec:
   replicas: 1
   selector:
@@ -50,8 +94,7 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-          #image: quay.io/ajarrett/java-logger:latest
-          image: quay.io/ajarrett/java-logger-size:latest
+          image: quay.io/ajarrett/java-logger:latest
           imagePullPolicy: Always
           name: java-logger
           ports:
@@ -60,12 +103,29 @@ spec:
           volumeMounts:
             - mountPath: /home/jboss/logs
               name: java-logger-pv
+        - name: filebeat
+          image: registry.connect.redhat.com/elastic/filebeat:7.17.1
+#          securityContext:
+#            runAsUser: filebeat
+#            privileged: true
+          volumeMounts:
+          - name: java-logger-pv
+            mountPath: /home/jboss/logs
+          - name: filebeat-config
+            mountPath: /usr/share/filebeat/filebeat.yml
+            subPath: filebeat.yml
       securityContext:
-        allowPrivilegeEscalation: false
+        allowPrivilegeEscalation: true
       volumes:
         - name: java-logger-pv
           persistentVolumeClaim:
             claimName: java-logger-pvc
+        - name: filebeat-config
+          configMap:
+            name: filebeat-configmap
+            items:
+              - key: filebeat.yml
+                path: filebeat.yml
 ---
 apiVersion: route.openshift.io/v1
 kind: Route
@@ -73,6 +133,7 @@ metadata:
   labels:
     app: java-logger
   name: java-logger
+  namespace: java-logger
 spec:
   port:
     targetPort: 8080-tcp

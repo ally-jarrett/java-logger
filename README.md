@@ -155,7 +155,6 @@ Postman collection is available in Repo
     $ >> [pod-bash] tail -f -100 /home/jboss/logs/<container_id>_java-logger.log
     ```
 
-
 ### Reference Documentation
 For further reference, please consider the following sections:
 
