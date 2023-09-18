@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class LoggingExecutor {
@@ -36,7 +37,7 @@ public class LoggingExecutor {
     @Async
     public void doSomeLogging(int logMessageLength) {
 
-        Instant start = Instant.now();
+        long startTime = System.currentTimeMillis();
 
         while (this.isRun()) {
             threadPoolExecutor.execute(new Runnable() {
@@ -52,8 +53,8 @@ public class LoggingExecutor {
             });
         }
 
-        Instant stop = Instant.now();
-        this.setTimeElapsedInSeconds(Duration.between(start, stop).toSeconds());
+        long elapsedTime = System.currentTimeMillis() - startTime;
+        this.setTimeElapsedInSeconds(TimeUnit.MILLISECONDS.toSeconds(elapsedTime));
         logger.info("Logging Generator ran for : {} Seconds", this.getTimeElapsedInSeconds());
     }
 

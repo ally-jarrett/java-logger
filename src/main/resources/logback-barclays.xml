@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-    <property resource="application.properties"/>
+<!--    <property resource="application.properties"/>-->
+<!--    <property resource="application-openshift.properties"/>-->
     <contextListener class="org.rh.example.config.LogbackStartupListener"/>
+
+    <springProperty name="LOG_PATH"
+                    source="LOG_PATH"
+                    defaultValue="logs"/>
 
     <springProperty name="asyncLoggingSwitch"
                     source="core.logging.appenders.async.switch"
@@ -87,7 +92,7 @@
 
     <springProperty name="perfLogMaxFileSize"
                     source="core.logging.appenders.perfLog.sizeBasedTriggeringPolicy.maxFileSize"
-                    defaultValue="10MB"/>
+                    defaultValue="100MB"/>
 
     <springProperty name="perfLogMaxFileIndex"
                     source="core.logging.appenders.perfLog.fixedWindowRollingPolicy.maxFileIndex"
@@ -130,7 +135,7 @@
 
     <springProperty name="ecrimeLogMaxFileSize"
                     source="core.logging.appenders.ecrimeLog.sizeBasedTriggeringPolicy.maxFileSize"
-                    defaultValue="10MB"/>
+                    defaultValue="100MB"/>
 
     <springProperty name="ecrimeLogMaxFileIndex"
                     source="core.logging.appenders.ecrimeLog.fixedWindowRollingPolicy.maxFileIndex"
@@ -173,7 +178,7 @@
 
     <springProperty name="activityLogMaxFileSize"
                     source="core.logging.appenders.activityLog.sizeBasedTriggeringPolicy.maxFileSize"
-                    defaultValue="10MB"/>
+                    defaultValue="100MB"/>
 
     <springProperty name="activityLogMaxFileIndex"
                     source="core.logging.appenders.activityLog.fixedWindowRollingPolicy.maxFileIndex"
@@ -216,7 +221,7 @@
 
     <springProperty name="reqResDataLogMaxFileSize"
                     source="core.logging.appenders.reqResDataLog.sizeBasedTriggeringPolicy.maxFileSize"
-                    defaultValue="10MB"/>
+                    defaultValue="100MB"/>
 
     <springProperty name="reqResDataLogMaxFileIndex"
                     source="core.logging.appenders.reqResDataLog.fixedWindowRollingPolicy.maxFileIndex"
@@ -241,10 +246,6 @@
             <maxFileSize>${reqResDataLogMaxFileSize}</maxFileSize>
         </triggeringPolicy>
     </appender>
-
-        <turboFilter class="com.barclays.global.mca.libs.logging.dynamic.DynamicThresholdFilterForLogback">
-            <Key>DynamicLogLevel</Key>
-        </turboFilter>
 
     <if condition="&quot;${asyncLoggingSwitch}&quot;.equals(&quot;ASYNC_&quot;)">
         <then>
@@ -280,12 +281,16 @@
 
             <springProperty name="async_PerfLogDiscardingThreshold"
                             source="core.logging.appenders.asyncPerfLog.discardingthreshold" defaultValue="0"/>
+
             <springProperty name="async_PerfLogQueueSize" source="core.logging.appenders.asyncPerfLog.queuesize"
                             defaultValue="50000"/>
+
             <springProperty name="async_PerfLogIncludeCallerData"
                             source="core.logging.appenders.asyncPerfLog.includecallerdata" defaultValue="false"/>
+
             <springProperty name="async_PerfLogMaxFlushTime" source="core.logging.appenders.asyncPerfLog.maxflushtime"
                             defaultValue="1000"/>
+
             <springProperty name="async_PerfLogNeverBlock" source="core.logging.appenders.asyncPerfLog.neverblock"
                             defaultValue="true"/>
 

@@ -6,9 +6,8 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <!-- use spring 2.5.4, LB 1.2.9, SLFJ 1.7.32 -->
-        <version>2.7.8</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <version>2.5.4</version>
+        <relativePath/>
     </parent>
 
     <groupId>org.rh.example</groupId>
@@ -18,11 +17,14 @@
     <description>Demo project for test Java Logging Speeds</description>
 
     <properties>
-        <!-- use java 8 -->
-        <java.version>11</java.version>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <java.version>8</java.version>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- Confirmed working versions -->
+        <logback.version>1.2.9</logback.version>
+        <slf4j.version>1.7.32</slf4j.version>
     </properties>
 
     <dependencies>
@@ -39,7 +41,6 @@
             <artifactId>janino</artifactId>
             <version>3.1.6</version>
         </dependency>
-
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

@@ -25,10 +25,9 @@ data:
                 var logName = logFilePath.substring(logFilePath.indexOf("/")+1, logFilePath.length)
                 event.Put("logFileId", logName)
                 event.Put("podName", podName)
-                event.Put("clusterName", "OCP_ODF_CLUSTER_CEDAR")
+                event.Put("clusterName", "OCP_ODF_CLUSTER_RHPDS")
               }
           }
-    path.data: /usr/share/filebeat/data/${JAVA_LOGGER_CONTAINER_NAME}
     filebeat.inputs:
     - type: log
       paths:
@@ -59,11 +58,11 @@ data:
       elasticsearch:
         hosts: ["https://elasticsearch-es-http.elastic-monitoring.svc.cluster.local:9200"]
         username: "elastic"
-        password: "yh7le70z8X7LedF7b4gP06C1"
+        password: "nL8Spe96gMd57T7JiSX52W40"
         ssl.verification_mode: none
     setup:
       kibana: 
-        host: "kibana-kb-http-elastic-monitoring.apps.cedar.demolab.local"
+        host: "kibana-kb-http.elastic-monitoring.svc.cluster.local"
     logging:
       level: debug
       to_files: true
@@ -74,6 +73,10 @@ data:
         name: filebeat
         keepfiles: 1
         permissions: 0640
+    filebeat.registry:
+      path: ${path.data}/registry
+      file_permissions: 0640
+
 ---
 apiVersion: v1
 kind: Service
@@ -102,22 +105,7 @@ spec:
     requests:
       storage: 12Gi
   # storageClassName: thin-csi
-  storageClassName: ocs-storagecluster-cephfs
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: filebeat-logger-pvc
-  namespace: java-logger
-spec:
-  accessModes:
-    - ReadWriteMany
-  persistentVolumeReclaimPolicy: Recycle
-  resources:
-    requests:
-      storage: 6Gi
-  # storageClassName: thin-csi
-  storageClassName: ocs-storagecluster-cephfs
+  storageClassName: px-csi-db
 ---
 apiVersion: apps/v1
 #kind: StatefulSet
@@ -128,7 +116,7 @@ metadata:
   name: java-logger
   namespace: java-logger
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       deployment: java-logger
@@ -144,7 +132,7 @@ spec:
             - name: SPRING_PROFILES_ACTIVE
               value: "openshift"
             - name: K8S_CLUSTER_ID
-              value: "OCP_ODF_CLUSTER_CEDAR"
+              value: "OCP_ODF_CLUSTER_RHPDS"
             - name: JAVA_LOGGER_CONTAINER_NAME
               valueFrom:
                 fieldRef:
@@ -161,7 +149,7 @@ spec:
         - name: filebeat
           env:
           - name: K8S_CLUSTER_ID
-            value: "OCP_ODF_CLUSTER_CEDAR"
+            value: "OCP_ODF_CLUSTER_RHPDS"
           - name: JAVA_LOGGER_CONTAINER_NAME
             valueFrom:
               fieldRef:
@@ -173,8 +161,8 @@ spec:
           - name: filebeat-config
             mountPath: /usr/share/filebeat/filebeat.yml
             subPath: filebeat.yml
-      securityContext:
-        allowPrivilegeEscalation: true
+#      securityContext:
+#        allowPrivilegeEscalation: true
       volumes:
         - name: java-logger-pv
           persistentVolumeClaim:
