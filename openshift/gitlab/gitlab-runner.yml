@@ -7,4 +7,4 @@ spec:
   buildImage: alpine
   token: gitlab-runner-secret
   tags: openshift
-  config: gitlab-runner-config
+  # config: gitlab-runner-config

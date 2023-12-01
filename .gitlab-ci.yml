@@ -8,7 +8,7 @@ build:
   stage: build
   tags:
     - openshift
-  script: ./mvnw package
+  script: mvn clean package
   artifacts:
     paths:
       - target/java-logger.jar
