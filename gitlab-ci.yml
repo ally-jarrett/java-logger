@@ -6,6 +6,8 @@ stages:
 
 build:
   stage: build
+  tags:
+    - openshift
   script: ./mvnw package
   artifacts:
     paths:
@@ -14,7 +16,7 @@ build:
 Deploy_job:
   stage: deploy
   tags:
-    - docker 
+    - openshift 
 
   script: 
     - echo "Maven deploy started"
