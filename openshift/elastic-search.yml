@@ -11,7 +11,8 @@ metadata:
   name: elasticsearch
   namespace: elastic-monitoring
 spec:
-  version: 7.17.1
+#  version: 7.17.1
+  version: 8.10.0
   nodeSets:
     - name: default
       count: 1
@@ -48,7 +49,8 @@ metadata:
   name: kibana
   namespace: elastic-monitoring
 spec:
-  version: 7.17.1
+# version: 7.17.1
+  version: 8.10.0
   count: 1
   elasticsearchRef:
     name: elasticsearch

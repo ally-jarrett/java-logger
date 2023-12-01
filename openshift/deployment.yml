@@ -59,7 +59,7 @@ data:
       elasticsearch:
         hosts: ["https://elasticsearch-es-http.elastic-monitoring.svc.cluster.local:9200"]
         username: "elastic"
-        password: "yh7le70z8X7LedF7b4gP06C1"
+        password: "g8Q45gEvC1Ka5B84t3sn0p3Q"
         ssl.verification_mode: none
     setup:
       kibana: 
@@ -100,7 +100,7 @@ spec:
   persistentVolumeReclaimPolicy: Recycle
   resources:
     requests:
-      storage: 12Gi
+      storage: 40Gi
   # storageClassName: thin-csi
   storageClassName: ocs-storagecluster-cephfs
 ---
@@ -115,7 +115,7 @@ spec:
   persistentVolumeReclaimPolicy: Recycle
   resources:
     requests:
-      storage: 6Gi
+      storage: 10Gi
   # storageClassName: thin-csi
   storageClassName: ocs-storagecluster-cephfs
 ---
@@ -137,6 +137,8 @@ spec:
       labels:
         deployment: java-logger
     spec:
+      nodeSelector:
+        odf-test-node: one
       containers:
         - env:
             - name: JAVA_LOGGER_EXEC_THREADS
@@ -166,7 +168,7 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.name
-          image: registry.connect.redhat.com/elastic/filebeat:7.17.1
+          image: registry.connect.redhat.com/elastic/filebeat:8.10.0
           volumeMounts:
           - name: java-logger-pv
             mountPath: /home/jboss/logs
